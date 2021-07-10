@@ -201,6 +201,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
         return False
 
     cost = 0
+    l = 8
     frontier = []
     openList = []
     solution = []
@@ -216,7 +217,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
     i = 0
 
     while len(frontier) > 0:
-        node = frontier.pop(0)
+        node = frontier.pop()
 
         if node == goalStateSplit:
             openList.append(goalStateX)
@@ -278,7 +279,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # LEFT y-axis
         if node[0] != -1 and node[1] - 1 != -1 and node[0] != mazeSize and node[1] - 1 != mazeSize:
-            if maze[node[0]][node[1] - 1] == 0:
+            if maze[node[0]][node[1] - 1] == 0 and node[0] < l:
                 expand.append(node[0])
                 expand.append(node[1] - 1)
                 candidates.append(expand.copy())
@@ -287,7 +288,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # RIGHT y-axis
         if node[0] != -1 and node[1] + 1 != -1 and node[0] != mazeSize and node[1] + 1 != mazeSize:
-            if maze[node[0]][node[1] + 1] == 0:
+            if maze[node[0]][node[1] + 1] == 0 and node[0] < l:
                 expand.append(node[0])
                 expand.append(node[1] + 1)
                 candidates.append(expand.copy())
@@ -296,7 +297,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # UP x-axis
         if node[0] - 1 != -1 and node[1] != -1 and node[0] - 1 != mazeSize and node[1] != mazeSize:
-            if maze[node[0] - 1][node[1]] == 0:
+            if maze[node[0] - 1][node[1]] == 0 and node[0] < l:
                 expand.append(node[0] - 1)
                 expand.append(node[1])
                 candidates.append(expand.copy())
@@ -305,7 +306,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # DOWN x-axis
         if node[0] + 1 != -1 and node[1] != -1 and node[0] + 1 != mazeSize and node[1] != mazeSize:
-            if maze[node[0] + 1][node[1]] == 0:
+            if maze[node[0] + 1][node[1]] == 0 and node[0] < l:
                 expand.append(node[0] + 1)
                 expand.append(node[1])
                 candidates.append(expand.copy())
@@ -402,7 +403,8 @@ if __name__ == '__main__':
 
         pathCopy = path
         while len(pathCopy) != 0:
-            printMaze[pathCopy[0][0]][pathCopy[0][1]] = 2
+            printMaze[pathCopy[0][0]][pathCopy[0][1]] = '+'
             pathCopy.pop(0)
 
+        np.set_printoptions(threshold=np.inf)
         print(np.matrix(printMaze))
