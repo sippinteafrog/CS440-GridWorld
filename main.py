@@ -1,4 +1,3 @@
-# import algo1
 import time
 import timeit
 from math import sqrt
@@ -18,6 +17,8 @@ def start(algorithm, maze, startStateSplit, goalStateSplit, mazeSize):
 
     return algo(maze, startStateSplit, goalStateSplit, mazeSize)
 
+
+########################################################################################################################
 
 def text2Maze(mazeSize, openMaze):
     maze = [[0 for x in range(mazeSize)] for y in range(mazeSize)]
@@ -49,6 +50,8 @@ def text2Maze(mazeSize, openMaze):
     return maze
 
 
+########################################################################################################################
+
 def bfs(maze, startStateSplit, goalStateSplit, mazeSize):
     goalStateX = goalStateSplit[0]
     goalStateY = goalStateSplit[1]
@@ -78,9 +81,12 @@ def bfs(maze, startStateSplit, goalStateSplit, mazeSize):
     maze[startStateX][startStateY] = 2
 
     i = 0
-
+    count = 0
     while len(frontier) > 0:
         node = frontier.pop(0)
+
+        count += 1
+        print(count)
 
         if node == goalStateSplit:
             openList.append(goalStateX)
@@ -184,6 +190,8 @@ def bfs(maze, startStateSplit, goalStateSplit, mazeSize):
 
     return False
 
+########################################################################################################################
+
 
 def dls(maze, startStateSplit, goalStateSplit, mazeSize):
     goalStateX = goalStateSplit[0]
@@ -201,7 +209,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
         return False
 
     cost = 0
-    l = 8
+    l = 92
     frontier = []
     openList = []
     solution = []
@@ -279,7 +287,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # LEFT y-axis
         if node[0] != -1 and node[1] - 1 != -1 and node[0] != mazeSize and node[1] - 1 != mazeSize:
-            if maze[node[0]][node[1] - 1] == 0 and node[0] < l:
+            if maze[node[0]][node[1] - 1] == 0 and node[0] <= l:
                 expand.append(node[0])
                 expand.append(node[1] - 1)
                 candidates.append(expand.copy())
@@ -288,7 +296,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # RIGHT y-axis
         if node[0] != -1 and node[1] + 1 != -1 and node[0] != mazeSize and node[1] + 1 != mazeSize:
-            if maze[node[0]][node[1] + 1] == 0 and node[0] < l:
+            if maze[node[0]][node[1] + 1] == 0 and node[0] <= l:
                 expand.append(node[0])
                 expand.append(node[1] + 1)
                 candidates.append(expand.copy())
@@ -297,7 +305,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # UP x-axis
         if node[0] - 1 != -1 and node[1] != -1 and node[0] - 1 != mazeSize and node[1] != mazeSize:
-            if maze[node[0] - 1][node[1]] == 0 and node[0] < l:
+            if maze[node[0] - 1][node[1]] == 0 and node[0] - 1 <= l:
                 expand.append(node[0] - 1)
                 expand.append(node[1])
                 candidates.append(expand.copy())
@@ -306,7 +314,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
         # DOWN x-axis
         if node[0] + 1 != -1 and node[1] != -1 and node[0] + 1 != mazeSize and node[1] != mazeSize:
-            if maze[node[0] + 1][node[1]] == 0 and node[0] < l:
+            if maze[node[0] + 1][node[1]] == 0 and node[0] + 1 <= l:
                 expand.append(node[0] + 1)
                 expand.append(node[1])
                 candidates.append(expand.copy())
@@ -321,26 +329,549 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
 
     return False
 
+########################################################################################################################
 
 
-def a2():
-    # if startStateSplit == goalStateSplit:
-    #     print('Start state is the goal state')
-    #     return -1
-    #
-    # if maze[startStateX][startStateY] == 1 or maze[goalStateX][goalStateY] == 1:
-    #     print('Start state or goal state is a wall. Please ensure start and goal state is not black.')
-    #     return -1
+class PriorityQueue():
 
-    return 'a2'
+    def __init__(self):
+        self.queue = []
+
+    def insert(self, data):
+        self.queue.append(data)
+
+    def isEmpty(self):
+        return len(self.queue) == 0
+
+    def delete(self):
+        max = 0
+        for i in range(len(self.queue)):
+            item = self.queue[i]
+            node = self.queue[max]
+            itemCost = item[2] + item[3]
+            maxCost = node[2] + node[3]
+            if itemCost < maxCost:
+                max = i
+
+        item = self.queue[max]
+        del self.queue[max]
+        return item
 
 
-def a3():
-    return 'a3'
+def euclidean(i, j):
+    x1_2 = j[0] - i[0]
+    y1_2 = j[1] - i[1]
+    x1_2 = abs(x1_2)
+    y1_2 = abs(y1_2)
+    return sqrt((x1_2 ** 2) + (y1_2 ** 2))
 
 
-def a4():
-    return 'a4'
+def manhattan(i, j):
+    x1_2 = j[0] - i[0]
+    y1_2 = j[1] - i[1]
+    x1_2 = abs(x1_2)
+    y1_2 = abs(y1_2)
+    return x1_2 + y1_2
+
+
+def h3(i, j):
+    return min(euclidean(i, j), manhattan(i, j))
+
+
+def chebyshev(i, j):
+    x1_2 = j[0] - i[0]
+    y1_2 = j[1] - i[1]
+    x1_2 = abs(x1_2)
+    y1_2 = abs(y1_2)
+    return max(x1_2, y1_2)
+
+########################################################################################################################
+
+
+def a2(maze, startStateSplit, goalStateSplit, mazeSize):
+    goalStateX = goalStateSplit[0]
+    goalStateY = goalStateSplit[1]
+
+    startStateX = startStateSplit[0]
+    startStateY = startStateSplit[1]
+
+    if startStateSplit == goalStateSplit:
+        print('Start state is the goal state')
+        return False
+
+    if maze[startStateX][startStateY] == 1 or maze[goalStateX][goalStateY] == 1:
+        print('Start state or goal state is a wall. Please ensure start and goal state is not black.')
+        return False
+
+    frontier = PriorityQueue()
+
+    starter = []
+    starter.append(startStateSplit[0])
+    starter.append(startStateSplit[1])
+    starter.append(euclidean(startStateSplit, goalStateSplit))
+    starter.append(0)
+
+    frontier.insert(starter)
+
+    cost = 0
+    openList = []
+    solution = []
+    path = []
+    closedList = []
+    candidates = []
+    expand = []
+    node = []
+
+    maze[startStateX][startStateY] = 2
+
+    i = 0
+    count = 0
+    while len(frontier.queue) > 0:
+        node = frontier.delete()
+
+        current = []
+        current.append(node[0])
+        current.append(node[1])
+
+        print(current)
+        count += 1
+        print(count)
+
+        i = maze[node[0]][node[1]] + 1
+
+        if current == goalStateSplit:
+            openList.append(goalStateX)
+            openList.append(goalStateY)
+            path.append(openList.copy())
+            openList.clear()
+
+            while maze[goalStateX][goalStateY] != 2:
+
+                # LEFT
+                if goalStateX != mazeSize and goalStateY - 1 != mazeSize and goalStateY != -1 and goalStateY - 1 != -1:
+                    if maze[goalStateX][goalStateY - 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY - 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY -= 1
+
+                # RIGHT
+                if goalStateX != mazeSize and goalStateY + 1 != mazeSize and goalStateX != -1 and goalStateY + 1 != -1:
+                    if maze[goalStateX][goalStateY + 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY + 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY += 1
+
+                # UP
+                if goalStateX - 1 != mazeSize and goalStateY != mazeSize and goalStateX - 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX - 1][goalStateY] == i - 1:
+                        openList.append(goalStateX - 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX -= 1
+
+                # DOWN
+                if goalStateX + 1 != mazeSize and goalStateY != mazeSize and goalStateX + 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX + 1][goalStateY] == i - 1:
+                        openList.append(goalStateX + 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX += 1
+
+                i -= 1
+                openList.clear()
+
+            path.reverse()
+
+            solution.append(path)
+            solution.append(cost)
+
+            return solution
+
+        closedList.append(node.copy())
+
+        # LEFT y-axis
+        if node[0] != -1 and node[1] - 1 != -1 and node[0] != mazeSize and node[1] - 1 != mazeSize:
+            if maze[node[0]][node[1] - 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] - 1)
+                expand.append(euclidean([node[0], node[1] - 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # RIGHT y-axis
+        if node[0] != -1 and node[1] + 1 != -1 and node[0] != mazeSize and node[1] + 1 != mazeSize:
+            if maze[node[0]][node[1] + 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] + 1)
+                expand.append(euclidean([node[0], node[1] + 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # UP x-axis
+        if node[0] - 1 != -1 and node[1] != -1 and node[0] - 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] - 1][node[1]] == 0:
+                expand.append(node[0] - 1)
+                expand.append(node[1])
+                expand.append(euclidean([node[0] - 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # DOWN x-axis
+        if node[0] + 1 != -1 and node[1] != -1 and node[0] + 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] + 1][node[1]] == 0:
+                expand.append(node[0] + 1)
+                expand.append(node[1])
+                expand.append(euclidean([node[0] + 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        for c in candidates:
+            if c not in closedList and c not in frontier.queue:
+                frontier.insert(c.copy())
+
+        candidates.clear()
+
+    return False
+
+########################################################################################################################
+
+
+def a3(maze, startStateSplit, goalStateSplit, mazeSize):
+    goalStateX = goalStateSplit[0]
+    goalStateY = goalStateSplit[1]
+
+    startStateX = startStateSplit[0]
+    startStateY = startStateSplit[1]
+
+    if startStateSplit == goalStateSplit:
+        print('Start state is the goal state')
+        return False
+
+    if maze[startStateX][startStateY] == 1 or maze[goalStateX][goalStateY] == 1:
+        print('Start state or goal state is a wall. Please ensure start and goal state is not black.')
+        return False
+
+    frontier = PriorityQueue()
+
+    starter = []
+    starter.append(startStateSplit[0])
+    starter.append(startStateSplit[1])
+    starter.append(euclidean(startStateSplit, goalStateSplit))
+    starter.append(0)
+
+    frontier.insert(starter)
+
+    cost = 0
+    openList = []
+    solution = []
+    path = []
+    closedList = []
+    candidates = []
+    expand = []
+    node = []
+
+    maze[startStateX][startStateY] = 2
+
+    i = 0
+    count = 0
+    while len(frontier.queue) > 0:
+        node = frontier.delete()
+
+        current = []
+        current.append(node[0])
+        current.append(node[1])
+
+        print(current)
+        count += 1
+        print(count)
+
+        i = maze[node[0]][node[1]] + 1
+
+        if current == goalStateSplit:
+            openList.append(goalStateX)
+            openList.append(goalStateY)
+            path.append(openList.copy())
+            openList.clear()
+
+            while maze[goalStateX][goalStateY] != 2:
+
+                # LEFT
+                if goalStateX != mazeSize and goalStateY - 1 != mazeSize and goalStateY != -1 and goalStateY - 1 != -1:
+                    if maze[goalStateX][goalStateY - 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY - 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY -= 1
+
+                # RIGHT
+                if goalStateX != mazeSize and goalStateY + 1 != mazeSize and goalStateX != -1 and goalStateY + 1 != -1:
+                    if maze[goalStateX][goalStateY + 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY + 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY += 1
+
+                # UP
+                if goalStateX - 1 != mazeSize and goalStateY != mazeSize and goalStateX - 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX - 1][goalStateY] == i - 1:
+                        openList.append(goalStateX - 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX -= 1
+
+                # DOWN
+                if goalStateX + 1 != mazeSize and goalStateY != mazeSize and goalStateX + 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX + 1][goalStateY] == i - 1:
+                        openList.append(goalStateX + 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX += 1
+
+                i -= 1
+                openList.clear()
+
+            path.reverse()
+
+            solution.append(path)
+            solution.append(cost)
+
+            return solution
+
+        closedList.append(node.copy())
+
+        # LEFT y-axis
+        if node[0] != -1 and node[1] - 1 != -1 and node[0] != mazeSize and node[1] - 1 != mazeSize:
+            if maze[node[0]][node[1] - 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] - 1)
+                expand.append(h3([node[0], node[1] - 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # RIGHT y-axis
+        if node[0] != -1 and node[1] + 1 != -1 and node[0] != mazeSize and node[1] + 1 != mazeSize:
+            if maze[node[0]][node[1] + 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] + 1)
+                expand.append(h3([node[0], node[1] + 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # UP x-axis
+        if node[0] - 1 != -1 and node[1] != -1 and node[0] - 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] - 1][node[1]] == 0:
+                expand.append(node[0] - 1)
+                expand.append(node[1])
+                expand.append(h3([node[0] - 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # DOWN x-axis
+        if node[0] + 1 != -1 and node[1] != -1 and node[0] + 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] + 1][node[1]] == 0:
+                expand.append(node[0] + 1)
+                expand.append(node[1])
+                expand.append(h3([node[0] + 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        for c in candidates:
+            if c not in closedList and c not in frontier.queue:
+                frontier.insert(c.copy())
+
+        candidates.clear()
+
+    return False
+
+########################################################################################################################
+
+
+def a4(maze, startStateSplit, goalStateSplit, mazeSize):
+    goalStateX = goalStateSplit[0]
+    goalStateY = goalStateSplit[1]
+
+    startStateX = startStateSplit[0]
+    startStateY = startStateSplit[1]
+
+    if startStateSplit == goalStateSplit:
+        print('Start state is the goal state')
+        return False
+
+    if maze[startStateX][startStateY] == 1 or maze[goalStateX][goalStateY] == 1:
+        print('Start state or goal state is a wall. Please ensure start and goal state is not black.')
+        return False
+
+    frontier = PriorityQueue()
+
+    starter = []
+    starter.append(startStateSplit[0])
+    starter.append(startStateSplit[1])
+    starter.append(euclidean(startStateSplit, goalStateSplit))
+    starter.append(0)
+
+    frontier.insert(starter)
+
+    cost = 0
+    openList = []
+    solution = []
+    path = []
+    closedList = []
+    candidates = []
+    expand = []
+    node = []
+
+    maze[startStateX][startStateY] = 2
+
+    i = 0
+    count = 0
+    while len(frontier.queue) > 0:
+        node = frontier.delete()
+
+        current = []
+        current.append(node[0])
+        current.append(node[1])
+
+        print(current)
+        count += 1
+        print(count)
+
+        i = maze[node[0]][node[1]] + 1
+
+        if current == goalStateSplit:
+            openList.append(goalStateX)
+            openList.append(goalStateY)
+            path.append(openList.copy())
+            openList.clear()
+
+            while maze[goalStateX][goalStateY] != 2:
+
+                # LEFT
+                if goalStateX != mazeSize and goalStateY - 1 != mazeSize and goalStateY != -1 and goalStateY - 1 != -1:
+                    if maze[goalStateX][goalStateY - 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY - 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY -= 1
+
+                # RIGHT
+                if goalStateX != mazeSize and goalStateY + 1 != mazeSize and goalStateX != -1 and goalStateY + 1 != -1:
+                    if maze[goalStateX][goalStateY + 1] == i - 1:
+                        openList.append(goalStateX)
+                        openList.append(goalStateY + 1)
+                        path.append(openList.copy())
+                        cost += 1
+                        goalStateY += 1
+
+                # UP
+                if goalStateX - 1 != mazeSize and goalStateY != mazeSize and goalStateX - 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX - 1][goalStateY] == i - 1:
+                        openList.append(goalStateX - 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX -= 1
+
+                # DOWN
+                if goalStateX + 1 != mazeSize and goalStateY != mazeSize and goalStateX + 1 != -1 and goalStateY != -1:
+                    if maze[goalStateX + 1][goalStateY] == i - 1:
+                        openList.append(goalStateX + 1)
+                        openList.append(goalStateY)
+                        path.append(openList.copy())
+                        cost += 2
+                        goalStateX += 1
+
+                i -= 1
+                openList.clear()
+
+            path.reverse()
+
+            solution.append(path)
+            solution.append(cost)
+
+            return solution
+
+        closedList.append(node.copy())
+
+        # LEFT y-axis
+        if node[0] != -1 and node[1] - 1 != -1 and node[0] != mazeSize and node[1] - 1 != mazeSize:
+            if maze[node[0]][node[1] - 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] - 1)
+                expand.append(chebyshev([node[0], node[1] - 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # RIGHT y-axis
+        if node[0] != -1 and node[1] + 1 != -1 and node[0] != mazeSize and node[1] + 1 != mazeSize:
+            if maze[node[0]][node[1] + 1] == 0:
+                expand.append(node[0])
+                expand.append(node[1] + 1)
+                expand.append(chebyshev([node[0], node[1] + 1], goalStateSplit))
+                expand.append(1 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # UP x-axis
+        if node[0] - 1 != -1 and node[1] != -1 and node[0] - 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] - 1][node[1]] == 0:
+                expand.append(node[0] - 1)
+                expand.append(node[1])
+                expand.append(chebyshev([node[0] - 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        # DOWN x-axis
+        if node[0] + 1 != -1 and node[1] != -1 and node[0] + 1 != mazeSize and node[1] != mazeSize:
+            if maze[node[0] + 1][node[1]] == 0:
+                expand.append(node[0] + 1)
+                expand.append(node[1])
+                expand.append(chebyshev([node[0] + 1, node[1]], goalStateSplit))
+                expand.append(2 + node[3])
+                candidates.append(expand.copy())
+                maze[expand[0]][expand[1]] = i
+                expand.clear()
+
+        for c in candidates:
+            if c not in closedList and c not in frontier.queue:
+                frontier.insert(c.copy())
+
+        candidates.clear()
+
+    return False
+
+########################################################################################################################
 
 
 if __name__ == '__main__':
@@ -370,8 +901,8 @@ if __name__ == '__main__':
 
     file.close()
 
-    # MazeNumberFile = 'a1/mazes/maze_' + mazeNumber + '.txt'
-    MazeNumberFile = 'a1/example_9x9.txt'
+    MazeNumberFile = 'a1/mazes/maze_' + mazeNumber + '.txt'
+    # MazeNumberFile = 'a1/example_9x9.txt'
     openMaze = open(MazeNumberFile)
 
     maze = text2Maze(mazeSize, openMaze)
@@ -385,7 +916,6 @@ if __name__ == '__main__':
         print('Path Not Found!')
 
     else:
-        # Save the found path and cost
         path = solution[0]
         cost = solution[1]
 
@@ -393,6 +923,11 @@ if __name__ == '__main__':
 
         print("\n----------Path----------")
         print(path)
+
+        contains_duplicates = any(path.count(element) > 1 for element in path)
+
+        print("\nDuplicates:   ", contains_duplicates)
+
         print('\n----------Length of path----------')
         print(len(path))
 
@@ -406,5 +941,4 @@ if __name__ == '__main__':
             printMaze[pathCopy[0][0]][pathCopy[0][1]] = '+'
             pathCopy.pop(0)
 
-        np.set_printoptions(threshold=np.inf)
         print(np.matrix(printMaze))
