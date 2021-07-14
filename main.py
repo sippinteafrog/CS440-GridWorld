@@ -1,7 +1,9 @@
 import time
 import timeit
+import datetime
 from math import sqrt
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def start(algorithm, maze, startStateSplit, goalStateSplit, mazeSize):
@@ -86,7 +88,7 @@ def bfs(maze, startStateSplit, goalStateSplit, mazeSize):
         node = frontier.pop(0)
 
         count += 1
-        print(count)
+        # print(count)
 
         if node == goalStateSplit:
             openList.append(goalStateX)
@@ -209,7 +211,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
         return False
 
     cost = 0
-    l = 92
+    l = 94
     frontier = []
     openList = []
     solution = []
@@ -433,9 +435,9 @@ def a2(maze, startStateSplit, goalStateSplit, mazeSize):
         current.append(node[0])
         current.append(node[1])
 
-        print(current)
+        # print(current)
         count += 1
-        print(count)
+        # print(count)
 
         i = maze[node[0]][node[1]] + 1
 
@@ -595,9 +597,9 @@ def a3(maze, startStateSplit, goalStateSplit, mazeSize):
         current.append(node[0])
         current.append(node[1])
 
-        print(current)
+        # print(current)
         count += 1
-        print(count)
+        # print(count)
 
         i = maze[node[0]][node[1]] + 1
 
@@ -757,9 +759,9 @@ def a4(maze, startStateSplit, goalStateSplit, mazeSize):
         current.append(node[0])
         current.append(node[1])
 
-        print(current)
+        # print(current)
         count += 1
-        print(count)
+        # print(count)
 
         i = maze[node[0]][node[1]] + 1
 
@@ -901,44 +903,76 @@ if __name__ == '__main__':
 
     file.close()
 
-    MazeNumberFile = 'a1/mazes/maze_' + mazeNumber + '.txt'
-    # MazeNumberFile = 'a1/example_9x9.txt'
-    openMaze = open(MazeNumberFile)
+    # for i in range(5):
+    algorithm = 1
+    costs = []
+    times = []
+    for j in range(101):
+        if j < 10:
+            mazeNumber = "00" + str(j)
+        elif j < 100:
+            mazeNumber = "0" + str(j)
+        else:
+            mazeNumber = "100"
 
-    maze = text2Maze(mazeSize, openMaze)
-    printMaze = [x[:] for x in maze]
+        MazeNumberFile = 'a1/mazes/maze_' + mazeNumber + '.txt'
+        openMaze = open(MazeNumberFile)
 
-    startTime = time.time() * 1000
-    solution = start(algorithm, maze, startStateSplit, goalStateSplit, mazeSize)
-    end = time.time() * 1000
+        maze = text2Maze(mazeSize, openMaze)
+        printMaze = [x[:] for x in maze]
 
-    if not solution:
-        print('Path Not Found!')
+        startTime = datetime.datetime.now()
+        solution = start(algorithm, maze, startStateSplit, goalStateSplit, mazeSize)
+        endTime = datetime.datetime.now()
 
-    else:
-        path = solution[0]
-        cost = solution[1]
+        print("Maze: " + str(mazeNumber))
+        if not solution:
+            print('Path Not Found!')
 
-        print(end - startTime)
+        else:
+            path = solution[0]
+            cost = solution[1]
 
-        print("\n----------Path----------")
-        print(path)
+            # print("\n----------Path----------")
+            # print(path)
+            #
+            # contains_duplicates = any(path.count(element) > 1 for element in path)
+            # print("\nDuplicates:   ", contains_duplicates)
+            #
+            # print('\n----------Length of path----------')
+            # print(len(path))
+            #
+            # print("\n----------Cost----------")
+            # print(cost)
 
-        contains_duplicates = any(path.count(element) > 1 for element in path)
+            print("Path: " + str(path))
+            print("Length of Path: " + str(len(path)) )
+            print("Cost: " + str(cost))
 
-        print("\nDuplicates:   ", contains_duplicates)
+            exec_time = (endTime - startTime).total_seconds() * 1000
+            print("Time: " + str(exec_time) + "ms")
 
-        print('\n----------Length of path----------')
-        print(len(path))
+            costs.append(cost)
+            times.append(exec_time)
 
-        print("\n----------Cost----------")
-        print(cost)
+            print("\n----------Path Found----------\n")
+            pathCopy = path
+            while len(pathCopy) != 0:
+                printMaze[pathCopy[0][0]][pathCopy[0][1]] = '+'
+                pathCopy.pop(0)
 
-        print("\n----------Path Found----------\n")
+            print(np.matrix(printMaze))
 
-        pathCopy = path
-        while len(pathCopy) != 0:
-            printMaze[pathCopy[0][0]][pathCopy[0][1]] = '+'
-            pathCopy.pop(0)
+    print("# of Paths Found: " + str(len(costs)))
+    n_costs = np.array(costs)
+    n_times = np.array(times)
+    avg_cost = np.average(n_costs)
+    avg_time = np.average(n_times)
+    print("Average Cost: " + "{:.3f}".format(avg_cost))
+    print("Average Time: " + "{:.3f}".format(avg_time))
+    plt.plot(n_times, n_costs, "o")
+    plt.title("Costs vs Time")
+    plt.xlabel("Time")
+    plt.ylabel("Cost")
+    plt.savefig("Alg " + str(algorithm), dpi=300, bbox_inches='tight')
 
-        print(np.matrix(printMaze))
