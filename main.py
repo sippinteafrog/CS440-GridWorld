@@ -211,7 +211,7 @@ def dls(maze, startStateSplit, goalStateSplit, mazeSize):
         return False
 
     cost = 0
-    l = 94
+    l = 92
     frontier = []
     openList = []
     solution = []
@@ -904,9 +904,9 @@ if __name__ == '__main__':
     file.close()
 
     # for i in range(5):
-    algorithm = 1
     costs = []
     times = []
+    lengths = []
     for j in range(101):
         if j < 10:
             mazeNumber = "00" + str(j)
@@ -921,11 +921,12 @@ if __name__ == '__main__':
         maze = text2Maze(mazeSize, openMaze)
         printMaze = [x[:] for x in maze]
 
+        print("\nMaze: " + str(mazeNumber))
+
         startTime = datetime.datetime.now()
         solution = start(algorithm, maze, startStateSplit, goalStateSplit, mazeSize)
         endTime = datetime.datetime.now()
 
-        print("Maze: " + str(mazeNumber))
         if not solution:
             print('Path Not Found!')
 
@@ -954,6 +955,7 @@ if __name__ == '__main__':
 
             costs.append(cost)
             times.append(exec_time)
+            lengths.append(len(path))
 
             print("\n----------Path Found----------\n")
             pathCopy = path
@@ -966,10 +968,13 @@ if __name__ == '__main__':
     print("# of Paths Found: " + str(len(costs)))
     n_costs = np.array(costs)
     n_times = np.array(times)
+    n_lengths=np.array(lengths)
     avg_cost = np.average(n_costs)
     avg_time = np.average(n_times)
+    avg_length = np.average(n_lengths)
     print("Average Cost: " + "{:.3f}".format(avg_cost))
     print("Average Time: " + "{:.3f}".format(avg_time))
+    print("Average Length: " + "{:.3f}".format(avg_length))
     plt.plot(n_times, n_costs, "o")
     plt.title("Costs vs Time")
     plt.xlabel("Time")
